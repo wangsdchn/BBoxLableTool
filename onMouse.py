@@ -19,14 +19,14 @@ class BBoxDrawing:
             #self.bboxes.clear()
         elif event==cv2.EVENT_LBUTTONUP:
             if self.drawing:
-                self.bboxes.append([self.pt0,self.pt1])
+                self.bboxes.append([self.lables[self.iter],self.pt0,self.pt1])
             self.drawing=False
         elif event==cv2.EVENT_RBUTTONDOWN:
             pass
         elif event==cv2.EVENT_RBUTTONUP:
-            for (pt0,pt1) in self.bboxes:
+            for (lable,pt0,pt1) in self.bboxes:
                 if x>pt0[0] and x< pt1[0] and y>pt0[1] and y<pt1[1]:
-                    self.bboxes.remove([pt0,pt1])
+                    self.bboxes.remove([lable,pt0,pt1])
         elif event==cv2.EVENT_MOUSEMOVE and (flags & cv2.EVENT_FLAG_LBUTTON):            
             if x< self.pt0[0] or y<self.pt0[1]:
                 print("Please begin paint from left-up corner")
@@ -37,7 +37,6 @@ class BBoxDrawing:
         elif event==cv2.EVENT_FLAG_RBUTTON:
             pass
         elif event==cv2.EVENT_MOUSEWHEEL:
-            print(flags)
             if flags>0:                
                 if 0==self.iter:
                     self.iter=3
@@ -48,13 +47,17 @@ class BBoxDrawing:
                     self.iter=0
                 else:
                     self.iter+=1
-            print(self.lables[self.iter])
     def drawBox(self):
-        self.tepImg=self.img.copy()
-        for (pt0,pt1) in self.bboxes:
-            cv2.rectangle(self.tepImg,pt0,pt1,(0,0,255),2)
+        h,w=self.img.shape[:2]
+        self.tepImg=cv2.copyMakeBorder(self.img,0,40,0,0,cv2.BORDER_CONSTANT,(0,0,0))
+        text="Current Lable : "+str(self.lables[self.iter])
+        cv2.putText(self.tepImg,text,(10,h+20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,255,0),1)
+        for (lable,pt0,pt1) in self.bboxes:
+            cv2.rectangle(self.tepImg,pt0,pt1,(0,0,255),1)
+            text=str(lable)
+            cv2.putText(self.tepImg,text,(pt0[0]+1,pt0[1]+5),cv2.FONT_HERSHEY_SIMPLEX,0.2,(0,255,0),0)
         if self.drawing:
-            cv2.rectangle(self.tepImg,self.pt0,self.pt1,(0,0,255),2)
+            cv2.rectangle(self.tepImg,self.pt0,self.pt1,(0,0,255),1)
     def saveimages(self):
         self.tepImg=self.img.copy()
         for (pt0,pt1) in self.bboxes:
@@ -64,7 +67,6 @@ class BBoxDrawing:
         cv2.namedWindow('lena',cv2.WINDOW_NORMAL)
         cv2.setMouseCallback('lena',self.on_mouse)
         self.img=cv2.imread(self.imgPath)
-        self.tepImg=self.img.copy()
         key=0
         while key!=27:
             self.drawBox()
@@ -79,7 +81,7 @@ class BBoxDrawing:
             
         cv2.destroyAllWindows()
 if __name__=='__main__':
-    srcPath='./lena.jpg'
+    srcPath='./lena1.jpg'
     bbox=BBoxDrawing(srcPath)
     bbox.start()
     
