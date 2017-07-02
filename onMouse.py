@@ -75,11 +75,11 @@ class BBoxDrawing:
             self.drawBox()
             cv2.imshow('lena',self.tepImg)
             key=cv2.waitKey(1)
-            "防止误点窗口关闭"
             if 8==key:
                 self.bboxes.clear()
             elif 115==key:
                 self.saveimages()
+            "防止误点窗口关闭"
             cv2.setMouseCallback('lena',self.on_mouse)
             
         cv2.destroyAllWindows()
