@@ -45,14 +45,14 @@ class BBoxDrawing:
         cv2.setMouseCallback('lena',self.on_mouse)
         self.img=cv2.imread(self.imgPath)
         self.tepImg=self.img.copy()
-        while True:
+        key=0
+        while key!=27:
             self.drawBox()
             cv2.imshow('lena',self.tepImg)
-            
-            if 27==cv2.waitKey(1)&0xff:
-                break
+            key=cv2.waitKey(1)
             "防止误点窗口关闭"
-            cv2.namedWindow('lena')
+            if 8==key:
+                self.bboxes.clear()
             cv2.setMouseCallback('lena',self.on_mouse)
             
         cv2.destroyAllWindows()
