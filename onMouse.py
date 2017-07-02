@@ -16,17 +16,22 @@ class BBoxDrawing:
             self.drawing=False
             #self.bboxes.clear()
         elif event==cv2.EVENT_LBUTTONUP:
+            if self.drawing:
+                self.bboxes.append([self.pt0,self.pt1])
             self.drawing=False
-            self.bboxes.append([self.pt0,self.pt1])
         elif event==cv2.EVENT_RBUTTONDOWN:
             pass
         elif event==cv2.EVENT_RBUTTONUP:
             for (pt0,pt1) in self.bboxes:
                 if x>pt0[0] and x< pt1[0] and y>pt0[1] and y<pt1[1]:
                     self.bboxes.remove([pt0,pt1])
-        elif event==cv2.EVENT_MOUSEMOVE and (flags & cv2.EVENT_FLAG_LBUTTON):
-            self.pt1=(x,y)
-            self.drawing=True
+        elif event==cv2.EVENT_MOUSEMOVE and (flags & cv2.EVENT_FLAG_LBUTTON):            
+            if x< self.pt0[0] or y<self.pt0[1]:
+                print("Please begin paint from left-up corner")
+                self.drawing=False
+            else:
+                self.pt1=(x,y)
+                self.drawing=True
         elif event==cv2.EVENT_FLAG_RBUTTON:
             pass
     def drawBox(self):
@@ -36,7 +41,7 @@ class BBoxDrawing:
         if self.drawing:
             cv2.rectangle(self.tepImg,self.pt0,self.pt1,(0,0,255),2)
     def start(self):
-        cv2.namedWindow('lena')
+        cv2.namedWindow('lena',cv2.WINDOW_NORMAL)
         cv2.setMouseCallback('lena',self.on_mouse)
         self.img=cv2.imread(self.imgPath)
         self.tepImg=self.img.copy()
