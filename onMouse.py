@@ -12,6 +12,7 @@ class BBoxDrawing:
         self.bboxes=[]
         self.lables=[0,1,2,3]
         self.iter=0
+        self.imgname=[0,0,0,0]
     def on_mouse(self,event,x,y,flags,param):
         if event==cv2.EVENT_LBUTTONDOWN:
             self.pt0=(x,y)
@@ -60,9 +61,11 @@ class BBoxDrawing:
             cv2.rectangle(self.tepImg,self.pt0,self.pt1,(0,0,255),1)
     def saveimages(self):
         self.tepImg=self.img.copy()
-        for (pt0,pt1) in self.bboxes:
+        for (lable,pt0,pt1) in self.bboxes:
             img=self.tepImg[pt0[0]:pt1[0],pt0[1]:pt1[1],:]
-            cv2.imwrite("",img)
+            self.imgname[lable]+=1
+            imgname="%.2d_%.4d.jpg" %(lable,self.imgname[lable])
+            cv2.imwrite(imgname,img)
     def start(self):
         cv2.namedWindow('lena',cv2.WINDOW_NORMAL)
         cv2.setMouseCallback('lena',self.on_mouse)
